@@ -28,7 +28,7 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
     private var waitTime = 1000
 
     override fun startHook() {
-        if (!sPrefs.getBoolean("skip_video_ad", false)) return
+        if (!sPrefs.getBoolean("skip_video_ad", true)) return
 
         Log.d("startHook: SkipVideoAd")
 
