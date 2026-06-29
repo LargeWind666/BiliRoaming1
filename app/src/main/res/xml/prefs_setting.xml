@@ -330,7 +330,6 @@
             android:title="@string/skip_reward_ad_title" />
         <Preference
             android:dependency="hidden"
-            android:defaultValue="true"
             android:key="purify_story_video_ad"
             android:summary="@string/purify_story_video_ad_summary"
             android:title="@string/purify_story_video_ad_title" />
@@ -547,6 +546,7 @@
 
         <SwitchPreference
             android:dependency="hidden"
+            android:defaultValue="true"
             android:key="skip_video_ad"
             android:summary="@string/skip_video_ad_summary"
             android:title="@string/skip_video_ad_title" />
