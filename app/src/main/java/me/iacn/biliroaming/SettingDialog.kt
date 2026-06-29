@@ -80,7 +80,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
                 packageName + "_preferences",
                 Context.MODE_MULTI_PROCESS
             )
-            if (!prefs.getBoolean("hidden", false)) {
+            if (!prefs.getBoolean("hidden", true)) {
                 val hiddenGroup = findPreference("hidden_group") as PreferenceCategory
                 preferenceScreen.removePreference(hiddenGroup)
             }
