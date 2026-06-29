@@ -111,61 +111,6 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
                 }
             }
         }
-
-        // Hook 进度条来绘制广告片段标记
-        hookSeekBarDrawing()
-    }
-
-    private fun hookSeekBarDrawing() {
-        // 查找并Hook SeekBar的onDraw方法来绘制广告片段
-        try {
-            val seekBarClass = Class.forName("android.widget.SeekBar")
-            
-            // Hook SeekBar的绘制方法
-            hookAfterMethod(seekBarClass, "onDraw", Canvas::class.java) { param ->
-                val seekBar = param.thisObject as? SeekBar ?: return@hookAfterMethod
-                seekBarRef = WeakReference(seekBar)
-                
-                val canvas = param.args[0] as Canvas
-                drawAdSegments(canvas, seekBar)
-            }
-        } catch (e: Exception) {
-            Log.e("Failed to hook SeekBar: ${e.message}")
-        }
-    }
-
-    private fun drawAdSegments(canvas: Canvas, seekBar: SeekBar) {
-        if (segments.isNullOrEmpty() || duration <= 0) return
-
-        val paint = Paint().apply {
-            color = Color.GREEN
-            strokeWidth = 2f
-            isAntiAlias = true
-        }
-
-        val seekBarWidth = seekBar.width - seekBar.paddingLeft - seekBar.paddingRight
-        val seekBarHeight = seekBar.height
-        val thumbOffset = seekBar.paddingLeft
-
-        for (segment in segments!!) {
-            val startSeconds = segment.segment[0]
-            val endSeconds = segment.segment[1]
-
-            // 计算在进度条上的像素位置
-            val startPixel = thumbOffset + (startSeconds / duration * seekBarWidth).toInt()
-            val endPixel = thumbOffset + (endSeconds / duration * seekBarWidth).toInt()
-
-            // 绘制绿色矩形表示广告片段
-            if (startPixel < endPixel) {
-                canvas.drawRect(
-                    startPixel.toFloat(),
-                    (seekBarHeight / 4).toFloat(),
-                    endPixel.toFloat(),
-                    (seekBarHeight * 3 / 4).toFloat(),
-                    paint
-                )
-            }
-        }
     }
 
     private fun seekTo(position: Int?): Boolean {
