@@ -14,6 +14,10 @@ import me.iacn.biliroaming.utils.hookAfterMethod
 import me.iacn.biliroaming.utils.hookBeforeMethod
 import me.iacn.biliroaming.utils.mossResponseHandlerReplaceProxy
 import me.iacn.biliroaming.utils.sPrefs
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.widget.SeekBar
 import java.lang.ref.WeakReference
 
 class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
@@ -26,6 +30,7 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
     private var bvid: String = ""
     private var cid: String = ""
     private var waitTime = 1000
+    private var seekBarRef: WeakReference<SeekBar>? = null
 
     override fun startHook() {
         if (!sPrefs.getBoolean("skip_video_ad", true)) return
@@ -92,7 +97,8 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
                         if (segments == null){
                             return@launch
                         }
-
+                        // 加载广告片段后刷新进度条
+                        seekBarRef?.get()?.invalidate()
                     }
                 }
             }
@@ -103,6 +109,61 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
                     lastSeekTime = now
                     waitTime = if(seekTo(param.result as Int)) 3000 else 1000
                 }
+            }
+        }
+
+        // Hook 进度条来绘制广告片段标记
+        hookSeekBarDrawing()
+    }
+
+    private fun hookSeekBarDrawing() {
+        // 查找并Hook SeekBar的onDraw方法来绘制广告片段
+        try {
+            val seekBarClass = Class.forName("android.widget.SeekBar")
+            
+            // Hook SeekBar的绘制方法
+            hookAfterMethod(seekBarClass, "onDraw", Canvas::class.java) { param ->
+                val seekBar = param.thisObject as? SeekBar ?: return@hookAfterMethod
+                seekBarRef = WeakReference(seekBar)
+                
+                val canvas = param.args[0] as Canvas
+                drawAdSegments(canvas, seekBar)
+            }
+        } catch (e: Exception) {
+            Log.e("Failed to hook SeekBar: ${e.message}")
+        }
+    }
+
+    private fun drawAdSegments(canvas: Canvas, seekBar: SeekBar) {
+        if (segments.isNullOrEmpty() || duration <= 0) return
+
+        val paint = Paint().apply {
+            color = Color.GREEN
+            strokeWidth = 2f
+            isAntiAlias = true
+        }
+
+        val seekBarWidth = seekBar.width - seekBar.paddingLeft - seekBar.paddingRight
+        val seekBarHeight = seekBar.height
+        val thumbOffset = seekBar.paddingLeft
+
+        for (segment in segments!!) {
+            val startSeconds = segment.segment[0]
+            val endSeconds = segment.segment[1]
+
+            // 计算在进度条上的像素位置
+            val startPixel = thumbOffset + (startSeconds / duration * seekBarWidth).toInt()
+            val endPixel = thumbOffset + (endSeconds / duration * seekBarWidth).toInt()
+
+            // 绘制绿色矩形表示广告片段
+            if (startPixel < endPixel) {
+                canvas.drawRect(
+                    startPixel.toFloat(),
+                    (seekBarHeight / 4).toFloat(),
+                    endPixel.toFloat(),
+                    (seekBarHeight * 3 / 4).toFloat(),
+                    paint
+                )
             }
         }
     }
@@ -126,6 +187,3 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
         return false
     }
 }
-
-
-
