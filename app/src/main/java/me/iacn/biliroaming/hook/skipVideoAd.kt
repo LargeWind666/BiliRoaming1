@@ -14,10 +14,6 @@ import me.iacn.biliroaming.utils.hookAfterMethod
 import me.iacn.biliroaming.utils.hookBeforeMethod
 import me.iacn.biliroaming.utils.mossResponseHandlerReplaceProxy
 import me.iacn.biliroaming.utils.sPrefs
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.widget.SeekBar
 import java.lang.ref.WeakReference
 
 class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
@@ -30,7 +26,6 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
     private var bvid: String = ""
     private var cid: String = ""
     private var waitTime = 1000
-    private var seekBarRef: WeakReference<SeekBar>? = null
 
     override fun startHook() {
         if (!sPrefs.getBoolean("skip_video_ad", false)) return
@@ -97,8 +92,7 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
                         if (segments == null){
                             return@launch
                         }
-                        // 加载广告片段后刷新进度条
-                        seekBarRef?.get()?.invalidate()
+
                     }
                 }
             }
