@@ -56,17 +56,6 @@ class XposedInit : IXposedHookLoadPackage, IXposedHookZygoteInit {
                     Log.d("Bilibili version: ${getPackageVersion(lpparam.packageName)} (${if (is64) "64" else "32"}bit)")
                     Log.d("SDK: ${Build.VERSION.RELEASE}(${Build.VERSION.SDK_INT}); Phone: ${Build.BRAND} ${Build.MODEL}")
                     Log.d("Config: ${sPrefs.all}")
-                    Log.toast(
-                        "哔哩漫游已激活${
-                            if (sPrefs.getBoolean("main_func", false) &&
-                                (!sPrefs.getString("hk_server", null).isNullOrEmpty() ||
-                                        !sPrefs.getString("th_server", null).isNullOrEmpty() ||
-                                        !sPrefs.getString("tw_server", null).isNullOrEmpty() ||
-                                        !sPrefs.getString("cn_server", null).isNullOrEmpty())
-                            ) ""
-                            else "。\n但未启用番剧解锁功能，请检查解析服务器设置。"
-                        }\n请勿在B站任何地方宣传漫游。\n漫游插件开源免费，谨防被骗。"
-                    )
 
                     country = MainScope().future(Dispatchers.IO) {
                         when (fetchJson(Constant.zoneUrl)?.optJSONObject("data")?.optInt("country_code", 0)?.or(0)) {
