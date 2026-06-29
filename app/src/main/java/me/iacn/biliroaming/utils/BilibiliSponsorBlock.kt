@@ -21,9 +21,9 @@ class BilibiliSponsorBlock(
         private const val USER_AGENT = "Mozilla/5.0 (Linux; Android; Xposed; NkBe) BBZQ/1.0"
 
         private val BASE_URLS = listOf(
+            "http://154.222.28.109/api/skipSegments/",
             "https://bsbsb.top/api/skipSegments/",
             "https://www.bsbsb.xyz/api/skipSegments/",
-            "http://154.222.28.109/api/skipSegments/",
         )
 
         private val cache = ConcurrentHashMap<String, CacheEntry>()
