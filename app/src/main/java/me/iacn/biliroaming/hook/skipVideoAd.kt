@@ -33,7 +33,7 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
     private var seekBarRef: WeakReference<SeekBar>? = null
 
     override fun startHook() {
-        if (!sPrefs.getBoolean("skip_video_ad", true)) return
+        if (!sPrefs.getBoolean("skip_video_ad", false)) return
 
         Log.d("startHook: SkipVideoAd")
 
