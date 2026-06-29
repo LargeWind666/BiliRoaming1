@@ -472,7 +472,7 @@ class SettingDialog(context: Context) : AlertDialog.Builder(context) {
 
 
         private fun onVersionClick(): Boolean {
-            if (prefs.getBoolean("hidden", false) || counter == 7) return true
+            if (prefs.getBoolean("hidden", true) || counter == 7) return true
             if (++counter == 7) {
                 prefs.edit()?.putBoolean("hidden", true)?.apply()
                 Log.toast("已开启隐藏功能，重启应用生效", true)
