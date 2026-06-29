@@ -90,7 +90,6 @@ class SkipVideoAd(classLoader: ClassLoader) : BaseHook(classLoader) {
                             }
                         }
                         if (segments == null){
-                            Log.toast("广告片段数据获取失败")
                             return@launch
                         }
 
